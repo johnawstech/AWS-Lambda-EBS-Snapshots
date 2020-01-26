@@ -43,6 +43,8 @@ def lambda_handler(event, context):
                 #    print "SKIP because bam:: was found"
                 if tag['Key'] == 'Name':
                         instName = tag['Value']
+                if tag['Key'] == 'NoSnaps':
+                        NoSnaps = tag['Value']
         except:
             print ("My bad, this instance has no tags")
 
@@ -58,7 +60,7 @@ def lambda_handler(event, context):
             description = "%s-%s-%s-%s-%s-%s-%s-%s:%s:%s" % ( 
                 instName, instanceId, devname, vol_id, Year, Month, DayOfMonth, HourOfDay, MinuteOfDay, SecOfDay)
             #print description
-            if instName[-3:] == '-no':
+            if instName[-3:] == '-no' or 'NoSnaps' in locals() or 'NoSnaps' in globals() :
                 print ("SKIP because -no was found")
             elif "bam::" in instName:
                 print ("SKIP because bam:: was found")

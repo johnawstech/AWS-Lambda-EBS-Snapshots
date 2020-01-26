@@ -3,7 +3,6 @@ import time
 import os
 import boto3
 
-
 def lambda_handler(event, context):
     instName = "" 
     ec = boto3.client('ec2')
@@ -22,8 +21,7 @@ def lambda_handler(event, context):
     print (DayOfMonth)
     print (HourOfDay)
     print (MinuteOfDay)
-    print (SecOfDay)
-    
+    print (SecOfDay)   
     reservations = ec.describe_instances( ).get(
         'Reservations', []
     )
@@ -44,7 +42,7 @@ def lambda_handler(event, context):
                 if tag['Key'] == 'Name':
                         instName = tag['Value']
         except:
-            print "My bad, this instance has no tags"
+            print ("My bad, this instance has no tags")
 
         for dev in instance['BlockDeviceMappings']:
             if dev.get('Ebs', None) is None:
@@ -59,25 +57,25 @@ def lambda_handler(event, context):
                 instName, instanceId, devname, vol_id, Year, Month, DayOfMonth, HourOfDay, MinuteOfDay, SecOfDay)
             #print description
             if instName[-3:] == '-no':
-                print "SKIP because -no was found"
+                print ("SKIP because -no was found")
             elif "bam::" in instName:
-                print "SKIP because bam:: was found"
+                print ("SKIP because bam:: was found")
             else:
-                print "Creating Snapshot for"
-                print description
-               try:
+                print ("Creating Snapshot for")
+                print (description)
+                try:
                   response = ec.create_snapshot(
                   Description=description,
                   VolumeId=vol_id
-               )
-               except:
-                  print "ERROR: Could not create Snapshot"
-               print response
-               snapshotID = response['SnapshotId']
-               #print snapId
-               ec2 = boto3.resource('ec2')
-               snapshot = ec2.Snapshot(snapshotID)
-               snapshot.create_tags(
+                )
+                except:
+                  print ("ERROR: Could not create Snapshot")
+                print (response)
+                snapshotID = response['SnapshotId']
+                #print snapId
+                ec2 = boto3.resource('ec2')
+                snapshot = ec2.Snapshot(snapshotID)
+                snapshot.create_tags(
                   Tags=[
                      {
                         'Key':   'deleteTime',
@@ -85,4 +83,3 @@ def lambda_handler(event, context):
                      },
                     ]
                   )
-   
